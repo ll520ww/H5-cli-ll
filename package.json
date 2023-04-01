@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "antd-mobile": "^5.28.2",
+    "less-loader": "^11.1.0",
     "lodash": "^4.17.21",
     "postcss": "^8.4.21",
     "postcss-loader": "^7.1.0",

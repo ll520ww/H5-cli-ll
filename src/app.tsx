@@ -1,22 +1,27 @@
-import React, {useMemo} from "react";
-import {BrowserRouter, Routes, useLocation} from "react-router-dom";
-import Home from "@/pages/home"
-import Test from "@/pages/test";
+import React, {Suspense, useMemo, useState} from "react";
+import {BrowserRouter, useLocation} from "react-router-dom";
 
 const Router = () => {
     const location = useLocation()
-    const Component:any= useMemo(()=>{
-        if (location.pathname.includes("/test")) {
-            return <Test></Test>
+    const [pageState,setPageState]=useState<null|"404"|"error">(null)
+    let path = location.pathname
+    const Component: any = useMemo(() => {
+        if (['/'].includes(path)) {
+            path = path + "home"
         }
-        if (location.pathname.includes("/")) {
-            return <Home></Home>
-        }
+        return React.lazy(() => import(`./pages/${path.substring(1)}`).catch((err:any)=>{
+            setPageState(err.toString().includes("Cannot find module")?"404":"error")
+        }))
 
-    },[location.pathname])
-    return Component
+    }, [path])
+    let pageComponent = () => {
+        return <Suspense fallback={<div>loading...</div>}>
+            <Component></Component>
+        </Suspense>
+    }
+
+    return pageComponent()
 }
-
 
 export const App = () => {
     return (
